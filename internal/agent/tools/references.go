@@ -16,6 +16,7 @@ import (
 
 	"charm.land/fantasy"
 	"github.com/charmbracelet/crush/internal/lsp"
+	lsputil "github.com/charmbracelet/crush/internal/lsp/util"
 	"github.com/charmbracelet/x/powernap/pkg/lsp/protocol"
 )
 
@@ -160,7 +161,7 @@ func cleanupLocations(locations []protocol.Location) []protocol.Location {
 func groupByFilename(locations []protocol.Location) map[string][]protocol.Location {
 	files := make(map[string][]protocol.Location)
 	for _, loc := range locations {
-		path, err := loc.URI.Path()
+		path, err := lsputil.URIToPath(loc.URI)
 		if err != nil {
 			slog.Error("Failed to convert location URI to path", "uri", loc.URI, "error", err)
 			continue

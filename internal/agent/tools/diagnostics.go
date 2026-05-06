@@ -12,6 +12,7 @@ import (
 
 	"charm.land/fantasy"
 	"github.com/charmbracelet/crush/internal/lsp"
+	lsputil "github.com/charmbracelet/crush/internal/lsp/util"
 	"github.com/charmbracelet/x/powernap/pkg/lsp/protocol"
 )
 
@@ -139,12 +140,12 @@ func getDiagnostics(filePath string, manager *lsp.Manager) string {
 
 	for lspName, client := range manager.Clients().Seq2() {
 		for location, diags := range client.GetDiagnostics() {
-			path, err := location.Path()
+			path, err := lsputil.URIToPath(location)
 			if err != nil {
 				slog.Error("Failed to convert diagnostic location URI to path", "uri", location, "error", err)
 				continue
 			}
-			isCurrentFile := path == filePath
+			isCurrentFile := lsputil.SamePath(path, filePath)
 			for _, diag := range diags {
 				formattedDiag := formatDiagnostic(path, diag, lspName)
 				if isCurrentFile {
